@@ -18,7 +18,13 @@ import {
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
-interface AISuggestionEnhanced extends typeof mockWillDraft.aiSuggestions[0] {
+interface AISuggestionEnhanced {
+  id: string
+  type: 'tax' | 'clause' | 'structure' | 'legal'
+  title: string
+  description: string
+  severity: 'info' | 'warning' | 'important'
+  accepted?: boolean
   beforeText: string
   afterText: string
   impact: 'high' | 'medium' | 'low'

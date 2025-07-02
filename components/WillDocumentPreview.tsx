@@ -265,7 +265,7 @@ export default function WillDocumentPreview({
                     if (willDraft.content.guardians && willDraft.content.guardians.length > 0) sectionNum++
                     if (willDraft.content.specificGifts.length > 0) sectionNum++
                     return sectionNum
-                  })(). RESIDUARY ESTATE
+                  })()} . RESIDUARY ESTATE
                 </h2>
                 <p className="mb-4">
                   I GIVE, DEVISE AND BEQUEATH all the rest, residue and remainder of my estate, 
@@ -296,7 +296,7 @@ export default function WillDocumentPreview({
                     if (willDraft.content.guardians && willDraft.content.guardians.length > 0) sectionNum++
                     if (willDraft.content.specificGifts.length > 0) sectionNum++
                     return sectionNum
-                  })(). POWERS OF EXECUTORS
+                  })()} . POWERS OF EXECUTORS
                 </h2>
                 <p className="mb-4">
                   I GIVE to my Executors the fullest power of sale, conversion, and management 
@@ -320,7 +320,7 @@ export default function WillDocumentPreview({
                       if (willDraft.content.guardians && willDraft.content.guardians.length > 0) sectionNum++
                       if (willDraft.content.specificGifts.length > 0) sectionNum++
                       return sectionNum
-                    })(). SPECIAL INSTRUCTIONS
+                    })()} . SPECIAL INSTRUCTIONS
                   </h2>
                   <p className="mb-4">{willDraft.content.specialInstructions}</p>
                 </section>
@@ -335,7 +335,7 @@ export default function WillDocumentPreview({
                     if (willDraft.content.specificGifts.length > 0) sectionNum++
                     if (willDraft.content.specialInstructions) sectionNum++
                     return sectionNum
-                  })(). EXECUTION
+                  })()} . EXECUTION
                 </h2>
                 <p className="mb-8">
                   IN WITNESS WHEREOF I have hereunto set my hand to this my Last Will and Testament, 
