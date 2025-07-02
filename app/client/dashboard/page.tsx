@@ -2,8 +2,10 @@
 
 import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import { useState } from 'react'
 import { useAuth } from '@/lib/context/AuthContext'
 import Navigation from '@/components/Navigation'
+import WillDocumentPreview from '@/components/WillDocumentPreview'
 import { mockClients, mockDocuments, mockWillDraft, mockTimeline, mockAppointments } from '@/lib/data/mockData'
 import { 
   FileText, 
@@ -21,6 +23,7 @@ import { cn } from '@/lib/utils'
 export default function ClientDashboard() {
   const router = useRouter()
   const { user } = useAuth()
+  const [showDocumentPreview, setShowDocumentPreview] = useState(false)
 
   useEffect(() => {
     if (!user || user.role !== 'client') {
@@ -199,7 +202,10 @@ export default function ClientDashboard() {
             <div className="bg-white rounded-lg shadow-sm p-6">
               <h2 className="text-xl font-semibold mb-4">Quick Actions</h2>
               <div className="space-y-3">
-                <button className="w-full flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+                <button 
+                  onClick={() => setShowDocumentPreview(true)}
+                  className="w-full flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+                >
                   <div className="flex items-center space-x-3">
                     <FileText className="w-5 h-5 text-primary" />
                     <span className="text-sm font-medium">View Draft Will</span>
@@ -227,6 +233,16 @@ export default function ClientDashboard() {
           </div>
         </div>
       </main>
+
+      {/* Document Preview Modal */}
+      {showDocumentPreview && (
+        <WillDocumentPreview 
+          willDraft={mockWillDraft}
+          isFullscreen={true}
+          onClose={() => setShowDocumentPreview(false)}
+          clientName={`${client.firstName} ${client.lastName}`}
+        />
+      )}
     </div>
   )
 }

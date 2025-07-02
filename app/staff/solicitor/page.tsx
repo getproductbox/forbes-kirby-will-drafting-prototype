@@ -4,6 +4,9 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/lib/context/AuthContext'
 import Navigation from '@/components/Navigation'
+import WillDocumentPreview from '@/components/WillDocumentPreview'
+import InteractiveAISuggestions from '@/components/InteractiveAISuggestions'
+import AIDocumentGenerator from '@/components/AIDocumentGenerator'
 import { mockClients, mockWillDraft, mockAppointments } from '@/lib/data/mockData'
 import { 
   Users, 
@@ -25,7 +28,9 @@ import { cn } from '@/lib/utils'
 export default function SolicitorDashboard() {
   const router = useRouter()
   const { user } = useAuth()
-  const [selectedClient, setSelectedClient] = useState<string | null>(null)
+  const [selectedClient, setSelectedClient] = useState<string | null>(mockClients[0]?.id || null)
+  const [activeTab, setActiveTab] = useState<'generator' | 'suggestions' | 'document'>('generator')
+  const [isGenerating, setIsGenerating] = useState(false)
 
   useEffect(() => {
     if (!user || user.role !== 'solicitor') {
@@ -168,77 +173,75 @@ export default function SolicitorDashboard() {
                       </p>
                     </div>
                     <div className="flex space-x-2">
-                      <button className="px-4 py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 flex items-center space-x-2">
-                        <Eye className="w-4 h-4" />
-                        <span className="text-sm">Preview</span>
-                      </button>
+                      <div className="flex bg-gray-100 rounded-lg p-1">
+                        <button
+                          onClick={() => setActiveTab('generator')}
+                          className={cn(
+                            'px-4 py-2 text-sm font-medium rounded-md transition-colors',
+                            activeTab === 'generator'
+                              ? 'bg-white text-primary shadow-sm'
+                              : 'text-gray-600 hover:text-gray-900'
+                          )}
+                        >
+                          AI Generator
+                        </button>
+                        <button
+                          onClick={() => setActiveTab('suggestions')}
+                          className={cn(
+                            'px-4 py-2 text-sm font-medium rounded-md transition-colors',
+                            activeTab === 'suggestions'
+                              ? 'bg-white text-primary shadow-sm'
+                              : 'text-gray-600 hover:text-gray-900'
+                          )}
+                        >
+                          AI Suggestions
+                        </button>
+                        <button
+                          onClick={() => setActiveTab('document')}
+                          className={cn(
+                            'px-4 py-2 text-sm font-medium rounded-md transition-colors',
+                            activeTab === 'document'
+                              ? 'bg-white text-primary shadow-sm'
+                              : 'text-gray-600 hover:text-gray-900'
+                          )}
+                        >
+                          Full Document
+                        </button>
+                      </div>
                       <button className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark flex items-center space-x-2">
                         <Edit className="w-4 h-4" />
-                        <span className="text-sm">Edit</span>
+                        <span className="text-sm">Edit Draft</span>
                       </button>
                     </div>
                   </div>
                 </div>
 
                 <div className="p-6">
-                  {/* AI Suggestions */}
-                  <div className="mb-6">
-                    <h3 className="font-semibold text-gray-900 mb-3 flex items-center">
-                      <Brain className="w-5 h-5 text-primary mr-2" />
-                      AI Suggestions
-                    </h3>
-                    <div className="space-y-3">
-                      {mockWillDraft.aiSuggestions?.map((suggestion) => (
-                        <div key={suggestion.id} className={cn(
-                          'p-4 rounded-lg border-l-4',
-                          suggestion.severity === 'important' && 'bg-red-50 border-red-400',
-                          suggestion.severity === 'warning' && 'bg-yellow-50 border-yellow-400',
-                          suggestion.severity === 'info' && 'bg-blue-50 border-blue-400'
-                        )}>
-                          <div className="flex justify-between items-start">
-                            <div>
-                              <h4 className="font-medium text-gray-900">{suggestion.title}</h4>
-                              <p className="text-sm text-gray-600 mt-1">{suggestion.description}</p>
-                            </div>
-                            <div className="flex space-x-2 ml-4">
-                              <button className="px-3 py-1 bg-green-100 text-green-700 rounded text-sm hover:bg-green-200">
-                                Accept
-                              </button>
-                              <button className="px-3 py-1 bg-gray-100 text-gray-700 rounded text-sm hover:bg-gray-200">
-                                Dismiss
-                              </button>
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
+                  {activeTab === 'generator' && (
+                    <AIDocumentGenerator 
+                      isGenerating={isGenerating}
+                      onComplete={() => {
+                        setIsGenerating(false)
+                        setActiveTab('suggestions')
+                      }}
+                      clientName={`${mockClients.find(c => c.id === selectedClient)?.firstName} ${mockClients.find(c => c.id === selectedClient)?.lastName}`}
+                    />
+                  )}
 
-                  {/* Draft Content Preview */}
-                  <div className="mb-6">
-                    <h3 className="font-semibold text-gray-900 mb-3">Draft Content</h3>
-                    <div className="bg-gray-50 rounded-lg p-4 text-sm">
-                      <h4 className="font-medium mb-2">LAST WILL AND TESTAMENT</h4>
-                      <p className="mb-2">
-                        <strong>Testator:</strong> {mockWillDraft.content.testator.fullName}
-                      </p>
-                      <p className="mb-2">
-                        <strong>Address:</strong> {mockWillDraft.content.testator.address}
-                      </p>
-                      <p className="mb-4">
-                        <strong>Date of Birth:</strong> {new Date(mockWillDraft.content.testator.dateOfBirth).toLocaleDateString()}
-                      </p>
-                      <p className="text-gray-600">
-                        I, {mockWillDraft.content.testator.fullName}, hereby revoke all former wills and testamentary dispositions made by me and declare this to be my last will and testament...
-                      </p>
-                      <div className="mt-4 p-3 bg-white rounded border text-center text-gray-500">
-                        [Complete document preview available in edit mode]
-                      </div>
-                    </div>
-                  </div>
+                  {activeTab === 'suggestions' && (
+                    <InteractiveAISuggestions />
+                  )}
+                  
+                  {activeTab === 'document' && (
+                    <WillDocumentPreview 
+                      willDraft={mockWillDraft}
+                      showActions={false}
+                      clientName={`${mockClients.find(c => c.id === selectedClient)?.firstName} ${mockClients.find(c => c.id === selectedClient)?.lastName}`}
+                    />
+                  )}
 
                   {/* Actions */}
-                  <div className="flex justify-between items-center">
+                  <div className="flex justify-between items-center mt-6 pt-6 border-t border-gray-200">
                     <div className="flex space-x-3">
                       <button className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 flex items-center space-x-2">
                         <CheckCircle className="w-4 h-4" />
